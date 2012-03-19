@@ -180,17 +180,27 @@ abstract class sfRestClientAbstract
    * @param   array $options            The configuration paramter
    * @return  sfRestClientAbstract      Current intance of sfRestClientAbstract
    */
-  public function setOptions($options) {
-    $this->options = array_merge(array(
-      'verb' => 'GET',
-      'acceptType' => 'application/xml',
-      'serializer' => 'xml',
-      'username' => null,
-      'password' => null,
-      'timeout' => 10
-    ), $options);
+  public function setOptions($options)
+  {
+      if(count($this->options) == 0)
+          $this->options = array_merge($this->getDefaultOptions(), $options);
+      else
+          $this->options = array_merge($this->options, $options);
 
     return $this;
+  }
+
+  protected function getDefaultOptions()
+  {
+      return array(
+          'verb' => 'GET',
+          'acceptType' => 'application/xml',
+          'header'     => array(),
+          'serializer' => 'xml',
+          'username' => null,
+          'password' => null,
+          'timeout' => 10
+      );
   }
 
   /**
@@ -236,8 +246,8 @@ abstract class sfRestClientAbstract
     if (!is_array($data))
     {
         throw new InvalidArgumentException('Invalid data input for postBody. Array expected');
-    }    
-    $data = http_build_query($data, '', '&');    
+    }
+    $data = http_build_query($data, '', '&');
     $this->requestBody = $data;
 
     return $this;
@@ -303,7 +313,7 @@ abstract class sfRestClientAbstract
 	   $error = join("\n", (array)$this->payload['error']);
 	}
         throw new sfException(sprintf("Invalid HTTP response code: %s: %s\nTrace : %s\n",
-            $this->responseInfo['http_code'], $this->url, $error));
+            $this->responseInfo['http_code'], $this->url, $error), $this->responseInfo['http_code']);
     }
 
     return $this;
@@ -419,7 +429,10 @@ abstract class sfRestClientAbstract
     curl_setopt($this->curlHandle, CURLOPT_TIMEOUT, $this->options['timeout']);
     curl_setopt($this->curlHandle, CURLOPT_URL, $this->url);
     curl_setopt($this->curlHandle, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($this->curlHandle, CURLOPT_HTTPHEADER, array ('Accept: ' . $this->options['acceptType']));
+    curl_setopt($this->curlHandle, CURLOPT_HTTPHEADER, array_merge(
+        array('Accept: ' . $this->options['acceptType']),
+        $this->options['header']
+    ));
     curl_setopt($this->curlHandle, CURLOPT_SSL_VERIFYPEER, 0);
   }
 

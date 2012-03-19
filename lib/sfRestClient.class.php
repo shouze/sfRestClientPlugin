@@ -16,9 +16,31 @@
  */
 class sfRestClient extends sfRestClientAbstract
 {
-  protected function unserialize() {
-    $this->payload = $this->getSerializer()->unserialize($this->responseBody);
+    protected function unserialize()
+    {
+        $this->payload = $this->getSerializer()->unserialize($this->responseBody);
 
-    return $this;
-  }
+        return $this;
+    }
+
+    public function setRequestBody($request_body)
+    {
+        $this->requestBody = $request_body;
+
+        return $this;
+    }
+
+    public function curlReinit()
+    {
+        $this->curlHandle = curl_init();
+
+        return $this;
+    }
+
+    public function setCurlOpt($key, $value)
+    {
+        curl_setopt($this->curlHandle, $key, $value);
+
+        return $this;
+    }
 }
