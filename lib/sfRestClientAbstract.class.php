@@ -307,11 +307,11 @@ abstract class sfRestClientAbstract
     else
     {
         $this->unserialize();
-	$error = "Unknow error";
-	if (isset($this->payload['error']))
-	{
-	   $error = join("\n", (array)$this->payload['error']);
-	}
+    $error = "Unknow error";
+    if (isset($this->payload['error']))
+    {
+       $error = join("\n", (array)$this->payload['error']);
+    }
         throw new sfException(sprintf("Invalid HTTP response code: %s: %s\nTrace : %s\n",
             $this->responseInfo['http_code'], $this->url, $error), $this->responseInfo['http_code']);
     }
@@ -334,7 +334,7 @@ abstract class sfRestClientAbstract
   protected function executeGet()
   {
      if ($this->requestBody != null)
-	$this->url .= '?'.$this->requestBody;
+    $this->url .= '?'.$this->requestBody;
      $this->doExecute();
   }
 
